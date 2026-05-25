@@ -23,8 +23,8 @@
     </script>
     <style>
         :root {
-            --verde: #8BBD47; --dourado: #FFAD02; --clarinho: '#BFFBAC';
-            --laranja: #EF8E26; --escuro: '#1E293B; --claro: '#F9F9F9';
+            --verde: #8BBD47; --dourado: #FFAD02; --clarinho: '#BFFBAC;
+            --laranja: #EF8E26; --escuro: #1E293B; --claro: #F9F9F9;
             --txt-dark: #0F172A; --txt-body: #334155; --txt-muted: #64748B;
             --border: #CBD5E1; --border-light: #E2E8F0;
         }
@@ -104,6 +104,12 @@
             width: 100%;
         }
 
+        /* ALTERAÇÃO: Quando tem apenas 1 card (sem permissão), centraliza bonito */
+        .cards-grid.grid-single {
+            grid-template-columns: 1fr;
+            max-width: 480px;
+        }
+
         /* ===== CARD BASE ===== */
         .form-card {
             background: white;
@@ -153,7 +159,6 @@
         .vi-title { font-family: 'Sora', sans-serif; font-weight: 600; font-size: 0.813rem; color: #92400e; }
         .vi-text { font-size: 0.75rem; color: var(--txt-muted); margin-top: 0.125rem; }
 
-        /* ===== BOTÕES DE AÇÃO ===== */
         .btn-submit {
             width: 100%; min-height: 52px; padding: 0 1.5rem; border-radius: 0.75rem; border: none;
             font-weight: 700; font-family: 'Sora', sans-serif; font-size: 0.938rem;
@@ -205,9 +210,19 @@
     </header>
 
     <main class="form-panel">
-        <div class="cards-grid">
+        
+        <!-- ALTERAÇÃO INICIADA: Verificação de Perfil e Classe CSS dinâmica -->
+        @php
+            $perfilUsuario = session('login')['perfil'] ?? '';
+            $podeEmitirSenha = in_array(mb_strtoupper(trim($perfilUsuario)), ['ADMINISTRADOR DO SISTEMA', 'GERENCIA']);
+        @endphp
+
+        <div class="cards-grid {{ !$podeEmitirSenha ? 'grid-single' : '' }}">
+        <!-- ALTERAÇÃO FINALIZADA -->
+
             
-            <!-- CARD 1: GERAR SENHA -->
+            <!-- CARD 1: GERAR SENHA (AGORA CONDICIONAL) -->
+            @if($podeEmitirSenha)
             <div class="form-card">
                 <div class="form-icon" role="img" aria-label="Icone de geracao de senha">
                     <i class="fa-solid fa-fingerprint text-2xl" style="color:var(--verde);"></i>
@@ -233,8 +248,9 @@
                 </form>
                 <p id="helpTextSenha" class="help-text"><i class="fa-solid fa-circle-info"></i> O codigo da turma esta disponivel na sua carta de convocacao.</p>
             </div>
+            @endif
 
-            <!-- CARD 2: BUSCAR ALUNO (Mesmo Padrão) -->
+            <!-- CARD 2: BUSCAR ALUNO -->
             <div class="form-card">
                 <div class="form-icon" role="img" aria-label="Icone de busca de aluno">
                     <i class="fa-solid fa-user-graduate text-2xl" style="color:var(--verde);"></i>
@@ -332,7 +348,6 @@
     // FUNÇÃO GENÉRICA PARA LIGAR EVENTOS A QUALQUER FORMULÁRIO
     // =============================================================
     function bindFormEvents(form, input, validator, toUpperCase) {
-        // Evita submit se vazio
         form.addEventListener('submit', (e) => {
             if (!input.value.trim()) {
                 e.preventDefault();
@@ -341,20 +356,17 @@
             }
         });
 
-        // Limpa alerta ao digitar (e aplica UPPERCASE se necessário)
         input.addEventListener('input', () => {
             if (toUpperCase) input.value = input.value.toUpperCase();
             if (validator.isVisible) validator.clear();
         });
 
-        // Limpa alerta se focar vazio
         input.addEventListener('focus', () => {
             if (input.value.trim() === '' && input.classList.contains('input-alert')) {
                 validator.clear();
             }
         });
 
-        // Limpa campo com ESC
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && document.activeElement === input) {
                 input.value = '';
@@ -365,16 +377,16 @@
     }
 
     // =============================================================
-    // INICIALIZAÇÃO SEGURA (SÓ APLICA SE OS ELEMENTOS EXISTIREM NA TELA)
+    // INICIALIZAÇÃO SEGURA
     // =============================================================
     document.addEventListener('DOMContentLoaded', () => {
         
-        // 1. Configuração do Formulário de Senha
+        // 1. Configuração do Formulário de Senha (Só existe na página se o cara tiver permissão)
         const formTurma = document.getElementById('formTurma');
         if (formTurma) {
             const inputTurma = document.getElementById('inputCodTurma');
             const valTurma = new FormValidator(inputTurma, document.getElementById('validationMsg'));
-            bindFormEvents(formTurma, inputTurma, valTurma, true); // true = força maiúsculo
+            bindFormEvents(formTurma, inputTurma, valTurma, true);
             window.addEventListener('load', () => setTimeout(() => inputTurma.focus(), 600));
         }
 
@@ -383,7 +395,7 @@
         if (formAluno) {
             const inputAluno = document.getElementById('inputBuscaAluno');
             const valAluno = new FormValidator(inputAluno, document.getElementById('validationMsgAluno'));
-            bindFormEvents(formAluno, inputAluno, valAluno, false); // false = mantém normal
+            bindFormEvents(formAluno, inputAluno, valAluno, false);
             window.addEventListener('load', () => setTimeout(() => inputAluno.focus(), 800));
         }
     });

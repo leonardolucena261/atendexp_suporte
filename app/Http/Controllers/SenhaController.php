@@ -33,6 +33,17 @@ class SenhaController extends Controller
             return view('senha.login');
         }
 
+        // ==========================================
+        // NOVA REGRA: Verificação de Perfil (LGPD/Segurança)
+        // ==========================================
+        $perfil = strtoupper(trim(session('login')['perfil'] ?? ''));
+        
+        if (!in_array($perfil, ['ADMINISTRADOR DO SISTEMA', 'GERENCIA'])) {
+            // Retorna erro 403 (Forbidden) se não for Admin ou Gerência
+            abort(403, 'Acesso não autorizado. Somente perfis de Administrador ou Gerência podem emitir senhas.');
+        }
+        // ==========================================
+
         $validated = $request->validate([
             'cod_turma' => 'required|string|max:5'
         ]);
