@@ -23,10 +23,14 @@
     </script>
     <style>
         :root {
-            --verde: #8BBD47; --dourado: #FFAD02; --clarinho: '#BFFBAC;
-            --laranja: #EF8E26; --escuro: #1E293B; --claro: #F9F9F9;
+            --verde: #8BBD47; --verde-dark: #6a9a2f; --verde-light: #a8d465;
+            --dourado: #FFAD02; --clarinho: #BFFBAC;
+            --laranja: #EF8E26; --escuro: #1E293B; --claro: #F9F9F9; --branco: #FFFFFF;
             --txt-dark: #0F172A; --txt-body: #334155; --txt-muted: #64748B;
             --border: #CBD5E1; --border-light: #E2E8F0;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+            --shadow-md: 0 4px 16px rgba(0,0,0,0.06), 0 2px 4px rgba(0,0,0,0.04);
+            --shadow-lg: 0 10px 32px rgba(0,0,0,0.08), 0 4px 8px rgba(0,0,0,0.04);
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
@@ -60,29 +64,98 @@
         }
 
         .app-topbar {
-            background: rgba(255,255,255,0.9);
+            background: rgba(255,255,255,0.85);
             border-bottom: 1px solid var(--border-light);
-            padding: 0.75rem 1.5rem;
+            padding: 0.625rem 1.5rem;
             display: flex;
             align-items: center;
             justify-content: space-between;
             position: sticky;
             top: 0;
             z-index: 50;
-            backdrop-filter: blur(8px);
+            backdrop-filter: blur(16px) saturate(180%);
+            -webkit-backdrop-filter: blur(16px) saturate(180%);
         }
         .topbar-left { display: flex; align-items: center; gap: 0.75rem; }
-        .topbar-logo { width: 36px; height: 36px; border-radius: 10px; background: var(--escuro); display: flex; align-items: center; justify-content: center; }
-        .topbar-logo i { color: var(--verde); font-size: 1rem; }
-        .topbar-title { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1rem; color: var(--txt-dark); }
-        .topbar-subtitle { font-size: 0.75rem; color: var(--txt-muted); }
-        .topbar-right { display: flex; align-items: center; gap: 0.75rem; }
-        
-        .user-chip { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.75rem 0.4rem 0.5rem; background: rgba(139,189,71,0.08); border: 1px solid rgba(139,189,71,0.2); border-radius: 999px; font-size: 0.813rem; color: var(--txt-dark); font-weight: 500; }
-        .user-chip i { color: var(--verde); font-size: 0.875rem; }
-        
-        .btn-logout { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.4rem 0.875rem; border-radius: 0.5rem; font-size: 0.813rem; font-weight: 600; font-family: 'Space Grotesk', sans-serif; color: var(--txt-muted); background: transparent; border: 1px solid transparent; cursor: pointer; text-decoration: none; transition: all 0.2s ease; min-height: 36px; }
+        .topbar-logo {
+            width: 38px; height: 38px; border-radius: 10px;
+            background: linear-gradient(135deg, var(--escuro) 0%, #0f172a 100%);
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 2px 8px rgba(30,41,59,0.25);
+            position: relative; overflow: hidden;
+        }
+        .topbar-logo::after {
+            content: '';
+            position: absolute; top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: linear-gradient(135deg, transparent 40%, rgba(139,189,71,0.15) 50%, transparent 60%);
+            animation: logoShine 4s ease-in-out infinite;
+        }
+        @keyframes logoShine {
+            0%, 100% { transform: translateX(-100%) rotate(25deg); }
+            50% { transform: translateX(100%) rotate(25deg); }
+        }
+        .topbar-logo i { color: var(--verde); font-size: 1rem; position: relative; z-index: 1; }
+        .topbar-title { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 1.025rem; color: var(--txt-dark); }
+        .topbar-subtitle { font-size: 0.7rem; color: var(--txt-muted); font-weight: 500; letter-spacing: 0.03em; }
+        .topbar-right { display: flex; align-items: center; gap: 0.5rem; }
+
+        .user-chip {
+            display: flex; align-items: center; gap: 0.5rem;
+            padding: 0.375rem 0.75rem 0.375rem 0.5rem;
+            background: rgba(139,189,71,0.07); border: 1px solid rgba(139,189,71,0.15);
+            border-radius: 999px; font-size: 0.8rem; color: var(--txt-dark); font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .user-chip:hover { background: rgba(139,189,71,0.12); border-color: rgba(139,189,71,0.25); }
+        .user-chip-avatar {
+            width: 24px; height: 24px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--verde), var(--verde-dark));
+            display: flex; align-items: center; justify-content: center;
+        }
+        .user-chip-avatar i { color: white; font-size: 0.625rem; }
+
+        .btn-ghost {
+            display: inline-flex; align-items: center; gap: 0.375rem;
+            padding: 0.4rem 0.875rem; border-radius: 0.5rem;
+            font-size: 0.8rem; font-weight: 600; font-family: 'Space Grotesk', sans-serif;
+            color: var(--txt-muted); background: transparent;
+            border: 1.5px solid transparent; cursor: pointer;
+            text-decoration: none; transition: all 0.25s cubic-bezier(0.22,1,0.36,1);
+            min-height: 36px; white-space: nowrap;
+        }
+        .btn-ghost:hover { color: var(--txt-dark); background: rgba(15,23,42,0.04); border-color: var(--border-light); }
         .btn-logout:hover { color: #dc2626; background: rgba(239,68,68,0.05); border-color: rgba(239,68,68,0.15); }
+
+        .btn-informe {
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.4rem 0.875rem; border-radius: 0.5rem;
+            font-size: 0.8rem; font-weight: 600; font-family: 'Space Grotesk', sans-serif;
+            color: #92400e; background: rgba(239,142,38,0.08);
+            border: 1.5px solid rgba(239,142,38,0.18); cursor: pointer;
+            text-decoration: none; transition: all 0.25s cubic-bezier(0.22,1,0.36,1);
+            min-height: 36px; white-space: nowrap;
+            position: relative; overflow: hidden;
+        }
+        .btn-informe::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+            opacity: 0; transition: opacity 0.25s;
+        }
+        .btn-informe:hover {
+            background: var(--laranja); color: white;
+            border-color: var(--laranja);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(239,142,38,0.35);
+        }
+        .btn-informe:hover::before { opacity: 1; }
+        .btn-informe:active { transform: translateY(0); }
+
+        .topbar-divider {
+            width: 1px; height: 24px;
+            background: var(--border-light);
+            margin: 0 0.125rem;
+        }
 
         /* ===== PAINEL GRID ===== */
         .form-panel {
@@ -103,8 +176,6 @@
             gap: 1.5rem;
             width: 100%;
         }
-
-        /* ALTERAÇÃO: Quando tem apenas 1 card (sem permissão), centraliza bonito */
         .cards-grid.grid-single {
             grid-template-columns: 1fr;
             max-width: 480px;
@@ -115,13 +186,19 @@
             background: white;
             border-radius: 1.5rem;
             padding: 2.5rem 2rem 2rem;
-            box-shadow: 0 8px 30px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.02);
+            box-shadow: var(--shadow-md);
             border: 1px solid var(--border-light);
             position: relative;
             z-index: 1;
             animation: cardIn 0.5s cubic-bezier(0.22,1,0.36,1);
         }
         .form-card:nth-child(2) { animation-delay: 0.1s; animation-fill-mode: backwards; }
+        .form-card::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
+            border-radius: 1.5rem 1.5rem 0 0;
+            background: linear-gradient(90deg, var(--verde), var(--verde-light), var(--dourado));
+            opacity: 0.7;
+        }
         @keyframes cardIn {
             from { opacity: 0; transform: translateY(20px) scale(0.98); }
             to   { opacity: 1; transform: translateY(0) scale(1); }
@@ -133,7 +210,9 @@
             margin: 0 auto 1.25rem;
             background: linear-gradient(135deg, rgba(139,189,71,0.12), rgba(255,173,2,0.08));
             border: 1.5px solid rgba(139,189,71,0.15);
+            transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
         }
+        .form-card:hover .form-icon { transform: scale(1.05) rotate(-2deg); }
 
         .field-label { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
         .field-label label { font-size: 0.75rem; font-weight: 600; color: var(--txt-muted); text-transform: uppercase; letter-spacing: 0.06em; }
@@ -144,10 +223,10 @@
             border: 1.5px solid var(--border); border-radius: 0.75rem;
             font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 600;
             color: var(--txt-dark); background: var(--claro); letter-spacing: 0.04em;
-            transition: all 0.2s ease;
+            transition: all 0.25s cubic-bezier(0.22,1,0.36,1);
         }
         .turma-input:hover { border-color: #94a3b8; }
-        .turma-input:focus { outline: none; background: white; border-color: var(--verde); box-shadow: 0 0 0 4px rgba(139,189,71,0.15); }
+        .turma-input:focus { outline: none; background: white; border-color: var(--verde); box-shadow: 0 0 0 4px rgba(139,189,71,0.12), var(--shadow-sm); }
         .turma-input::placeholder { color: #94a3b8; font-weight: 400; font-size: 0.875rem; letter-spacing: 0; }
         .turma-input.input-alert { border-color: rgba(239,142,38,0.4); background: #fffbeb; }
         .turma-input.input-alert:focus { border-color: var(--laranja); box-shadow: 0 0 0 4px rgba(239,142,38,0.15); }
@@ -162,19 +241,33 @@
         .btn-submit {
             width: 100%; min-height: 52px; padding: 0 1.5rem; border-radius: 0.75rem; border: none;
             font-weight: 700; font-family: 'Sora', sans-serif; font-size: 0.938rem;
-            cursor: pointer; transition: all 0.2s ease;
+            cursor: pointer; transition: all 0.25s cubic-bezier(0.22,1,0.36,1);
             display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-            margin-top: 0.5rem; background: var(--verde); color: white;
+            margin-top: 0.5rem; background: linear-gradient(135deg, var(--verde), var(--verde-dark)); color: white;
             box-shadow: 0 2px 8px rgba(139,189,71,0.3);
+            position: relative; overflow: hidden;
         }
-        .btn-submit:hover { background: #7aa83d; box-shadow: 0 4px 12px rgba(139,189,71,0.4); transform: translateY(-1px); }
+        .btn-submit::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(135deg, transparent, rgba(255,255,255,0.15));
+            opacity: 0; transition: opacity 0.25s;
+        }
+        .btn-submit:hover { box-shadow: 0 6px 20px rgba(139,189,71,0.4); transform: translateY(-2px); }
+        .btn-submit:hover::after { opacity: 1; }
         .btn-submit:active { transform: translateY(0) scale(0.98); }
 
         .help-text { text-align: center; font-size: 0.813rem; color: var(--txt-muted); margin-top: 1.5rem; line-height: 1.6; }
         .help-text i { color: rgba(139,189,71,0.6); margin-right: 0.25rem; }
 
-        .toast { position: fixed; top: 1rem; left: 50%; z-index: 1000; transform: translateX(-50%) translateY(-120%); transition: transform 0.5s cubic-bezier(0.22,1,0.36,1); width: calc(100% - 2rem); max-width: 380px; }
-        .toast.show { transform: translateX(-50%) translateY(0); }
+        .app-footer {
+            margin-top: auto; padding: 1rem 1.5rem; text-align: center;
+            font-size: 0.7rem; color: var(--txt-muted);
+            border-top: 1px solid var(--border-light);
+            background: rgba(255,255,255,0.5);
+            backdrop-filter: blur(8px);
+            position: relative; z-index: 1;
+        }
+        .app-footer span { color: var(--verde); font-weight: 600; }
 
         :focus-visible { outline: none; box-shadow: 0 0 0 3px white, 0 0 0 5px var(--verde); border-radius: 4px; }
 
@@ -182,11 +275,16 @@
 
         @media (max-width: 768px) { .cards-grid { grid-template-columns: 1fr; max-width: 420px; } }
         @media (max-width: 640px) {
-            .app-topbar { padding: 0.5rem 1rem; }
+            .app-topbar { padding: 0.5rem 0.75rem; }
             .topbar-title { font-size: 0.875rem; }
-            .user-chip span { display: none; }
+            .topbar-subtitle { display: none; }
+            .user-chip .user-text { display: none; }
+            .btn-ghost .btn-text { display: none; }
+            .btn-informe .btn-text { display: none; }
+            .topbar-divider { display: none; }
             .form-panel { padding: 1rem 0.75rem; }
             .form-card { padding: 2rem 1.5rem 1.5rem; }
+            .app-footer { padding: 0.75rem 1rem; }
         }
     </style>
 </head>
@@ -201,27 +299,34 @@
             </div>
         </div>
         <div class="topbar-right">
+            {{-- BOTÃO INFORME PRÉ-CADASTRO --}}
+            <a href="{{ route('aluno.informePrecadastro') }}" class="btn-informe" aria-label="Informe sobre pre-cadastro">
+                <i class="fa-solid fa-file-lines text-xs" aria-hidden="true"></i>
+                <span class="btn-text">QR Code de Pre-cadastro</span>
+            </a>
+
+            <div class="topbar-divider" aria-hidden="true"></div>
+
             <div class="user-chip" aria-label="Usuario logado">
-                <i class="fa-solid fa-user"></i>
-                <span>{{ session('login')['nome_completo'] }}</span>
+                <div class="user-chip-avatar"><i class="fa-solid fa-user"></i></div>
+                <span class="user-text">{{ session('login')['nome_completo'] }}</span>
             </div>
-            <a href="{{ route('login') }}" class="btn-logout" title="Sair do sistema"><i class="fa-solid fa-right-from-bracket"></i><span>Sair</span></a>
+            <a href="{{ route('login') }}" class="btn-ghost btn-logout" title="Sair do sistema">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                <span class="btn-text">Sair</span>
+            </a>
         </div>
     </header>
 
     <main class="form-panel">
         
-        <!-- ALTERAÇÃO INICIADA: Verificação de Perfil e Classe CSS dinâmica -->
         @php
             $perfilUsuario = session('login')['perfil'] ?? '';
             $podeEmitirSenha = in_array(mb_strtoupper(trim($perfilUsuario)), ['ADMINISTRADOR DO SISTEMA', 'GERENCIA']);
         @endphp
 
         <div class="cards-grid {{ !$podeEmitirSenha ? 'grid-single' : '' }}">
-        <!-- ALTERAÇÃO FINALIZADA -->
-
             
-            <!-- CARD 1: GERAR SENHA (AGORA CONDICIONAL) -->
             @if($podeEmitirSenha)
             <div class="form-card">
                 <div class="form-icon" role="img" aria-label="Icone de geracao de senha">
@@ -250,7 +355,6 @@
             </div>
             @endif
 
-            <!-- CARD 2: BUSCAR ALUNO -->
             <div class="form-card">
                 <div class="form-icon" role="img" aria-label="Icone de busca de aluno">
                     <i class="fa-solid fa-user-graduate text-2xl" style="color:var(--verde);"></i>
@@ -289,23 +393,11 @@
         </div>
     </main>
 
-    <!-- ===== TOAST ===== -->
-    <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
-        <div style="display:flex;align-items:center;gap:0.625rem;padding:0.75rem 1rem;border-radius:0.75rem;background:white;box-shadow:0 4px 20px rgba(0,0,0,0.12);border:1px solid var(--border-light);">
-            <div id="toastIcon" style="width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:rgba(239,142,38,0.1);" aria-hidden="true">
-                <i class="fa-solid fa-triangle-exclamation text-xs" style="color:var(--laranja);"></i>
-            </div>
-            <div style="min-width:0;">
-                <p id="toastTitle" style="font-size:0.813rem;font-family:'Sora',sans-serif;font-weight:600;color:var(--txt-dark);"></p>
-                <p id="toastMsg" style="font-size:0.75rem;color:var(--txt-muted);"></p>
-            </div>
-        </div>
-    </div>
+    <footer class="app-footer">
+        <span>Cidade do Saber</span> — Prefeitura de Camacari · Sistema de Atendimento
+    </footer>
 
     <script>
-    // =============================================================
-    // CLASSE DE VALIDAÇÃO REUTILIZÁVEL
-    // =============================================================
     class FormValidator {
         #input;
         #msgContainer;
@@ -344,9 +436,6 @@
         get isVisible() { return this.#msgContainer.classList.contains('visible'); }
     }
 
-    // =============================================================
-    // FUNÇÃO GENÉRICA PARA LIGAR EVENTOS A QUALQUER FORMULÁRIO
-    // =============================================================
     function bindFormEvents(form, input, validator, toUpperCase) {
         form.addEventListener('submit', (e) => {
             if (!input.value.trim()) {
@@ -376,12 +465,8 @@
         });
     }
 
-    // =============================================================
-    // INICIALIZAÇÃO SEGURA
-    // =============================================================
     document.addEventListener('DOMContentLoaded', () => {
         
-        // 1. Configuração do Formulário de Senha (Só existe na página se o cara tiver permissão)
         const formTurma = document.getElementById('formTurma');
         if (formTurma) {
             const inputTurma = document.getElementById('inputCodTurma');
@@ -390,7 +475,6 @@
             window.addEventListener('load', () => setTimeout(() => inputTurma.focus(), 600));
         }
 
-        // 2. Configuração do Formulário de Aluno
         const formAluno = document.getElementById('formAluno');
         if (formAluno) {
             const inputAluno = document.getElementById('inputBuscaAluno');

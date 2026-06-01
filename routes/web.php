@@ -49,6 +49,7 @@ Route::get('/app/{uuid}/matricula/{cod_turma_aluno}/comprovante', [CarteirinhaCo
 Route::get('/precadastro', [PreCadastroController::class, 'index'])->name('precadastro.index');
 Route::post('/precadastro/verificar', [PreCadastroController::class, 'verificarHumano'])->name('precadastro.verificar');
 Route::post('/precadastro', [PreCadastroController::class, 'store'])->name('precadastro.store');
+Route::get('/informe-pre-cadastro', [AlunoController::class, 'informePrecadastro'])->name('aluno.informePrecadastro');
 
 //Garante o mainfest para instalacao do APP em Celulares
 Route::get('/manifest.json', [PwaController::class, 'manifest']);    

@@ -15,11 +15,17 @@ class AlunoController extends Controller
      */
     public function __invoke(Request $request)
     {
-        //
+        if(!session('login')) {
+            return view('senha.login');
+        } 
     }
 
     public function index(Request $request)
     {
+        if(!session('login')) {
+            return view('senha.login');
+        } 
+
         $query = Aluno::query();
         // Se houver busca (ex: pelo nome ou CPF)
         if ($request->filled('busca')) {
@@ -54,6 +60,9 @@ class AlunoController extends Controller
      */
     public function carteirinha(int $cod_aluno, $id = null) : View
     {
+        if(!session('login')) {
+            return view('senha.login');
+        } 
         // 1. Busca o aluno (Falha automaticamente se não existir)
         $aluno = Aluno::findOrFail($cod_aluno);
 
@@ -90,6 +99,18 @@ class AlunoController extends Controller
             'aluno'        => $aluno,
             'historico'    => $aluno->carteirinhas()->orderByDesc('created_at')->get() // Todas as carteiras (para o painel lateral)
         ]);
+    }
+
+    /**
+     * Exibe a página informativa sobre o processo de pré-cadastro.
+     */
+    public function informePrecadastro()
+    {
+        if (!session('login')) {
+            return view('senha.login');
+        }
+
+        return view('aluno.informeprecadastro');
     }
 
 }
