@@ -6,6 +6,7 @@ use App\Http\Controllers\LoginController;
 use App\Http\Controllers\MatriculaController;
 use App\Http\Controllers\PreCadastroController;
 use App\Http\Controllers\PwaController;
+use App\Http\Controllers\RelatorioController;
 use App\Http\Controllers\SenhaController;
 use App\Http\Controllers\VagaController;
 use Illuminate\Support\Facades\Route;
@@ -53,3 +54,7 @@ Route::get('/informe-pre-cadastro', [AlunoController::class, 'informePrecadastro
 
 //Garante o mainfest para instalacao do APP em Celulares
 Route::get('/manifest.json', [PwaController::class, 'manifest']);    
+
+// Rotas de controle de relatórios
+Route::get('/relatorios/matriculas', [RelatorioController::class, 'matriculas'])->name('relatorio.matriculas');
+Route::get('/relatorios/matriculas/excel', [RelatorioController::class, 'exportExcel'])->name('relatorio.matriculas.excel');

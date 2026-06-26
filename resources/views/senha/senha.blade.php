@@ -63,6 +63,7 @@
             z-index: 0;
         }
 
+        /* ===== TOPBAR ===== */
         .app-topbar {
             background: rgba(255,255,255,0.85);
             border-bottom: 1px solid var(--border-light);
@@ -151,11 +152,7 @@
         .btn-informe:hover::before { opacity: 1; }
         .btn-informe:active { transform: translateY(0); }
 
-        .topbar-divider {
-            width: 1px; height: 24px;
-            background: var(--border-light);
-            margin: 0 0.125rem;
-        }
+        .topbar-divider { width: 1px; height: 24px; background: var(--border-light); margin: 0 0.125rem; }
 
         /* ===== PAINEL GRID ===== */
         .form-panel {
@@ -163,89 +160,135 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 2rem 1rem;
+            padding: 2.5rem 1.25rem;
             position: relative;
             z-index: 1;
             width: 100%;
-            max-width: 960px; 
-            margin: 0 auto;
         }
         .cards-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 1.5rem;
+            gap: 1.25rem;
             width: 100%;
+            max-width: 860px;
         }
         .cards-grid.grid-single {
             grid-template-columns: 1fr;
-            max-width: 480px;
+            max-width: 440px;
+        }
+        /* ★ Grid 3 colunas quando há card de relatórios */
+        .cards-grid.grid-trio {
+            grid-template-columns: repeat(3, 1fr);
+            max-width: 1120px;
+            gap: 1rem;
         }
 
         /* ===== CARD BASE ===== */
         .form-card {
             background: white;
-            border-radius: 1.5rem;
-            padding: 2.5rem 2rem 2rem;
+            border-radius: 1.25rem;
+            padding: 1.75rem 1.5rem 1.5rem;
             box-shadow: var(--shadow-md);
             border: 1px solid var(--border-light);
             position: relative;
             z-index: 1;
             animation: cardIn 0.5s cubic-bezier(0.22,1,0.36,1);
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.3s cubic-bezier(0.22,1,0.36,1), box-shadow 0.3s ease;
+            overflow: hidden;
         }
-        .form-card:nth-child(2) { animation-delay: 0.1s; animation-fill-mode: backwards; }
+        .form-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+        .form-card:nth-child(2) { animation-delay: 0.08s; animation-fill-mode: backwards; }
+        .form-card:nth-child(3) { animation-delay: 0.16s; animation-fill-mode: backwards; }
         .form-card::before {
             content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px;
-            border-radius: 1.5rem 1.5rem 0 0;
+            border-radius: 1.25rem 1.25rem 0 0;
             background: linear-gradient(90deg, var(--verde), var(--verde-light), var(--dourado));
-            opacity: 0.7;
+            opacity: 0.75;
+        }
+        /* ★ Barra de topo dourada no card de relatórios */
+        .form-card.card-relatorio::before {
+            background: linear-gradient(90deg, var(--dourado), #fbbf24, var(--laranja));
         }
         @keyframes cardIn {
             from { opacity: 0; transform: translateY(20px) scale(0.98); }
             to   { opacity: 1; transform: translateY(0) scale(1); }
         }
 
+        /* ★ Ícone do card — menor e mais elegante */
         .form-icon {
-            width: 64px; height: 64px; border-radius: 1rem;
+            width: 48px; height: 48px; border-radius: 0.75rem;
             display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 1.25rem;
+            margin: 0 auto 1rem;
             background: linear-gradient(135deg, rgba(139,189,71,0.12), rgba(255,173,2,0.08));
             border: 1.5px solid rgba(139,189,71,0.15);
             transition: transform 0.3s cubic-bezier(0.22,1,0.36,1);
         }
-        .form-card:hover .form-icon { transform: scale(1.05) rotate(-2deg); }
+        .form-card:hover .form-icon { transform: scale(1.06) rotate(-3deg); }
+
+        /* ★ Ícone do card de relatórios com tom dourado */
+        .form-card.card-relatorio .form-icon {
+            background: linear-gradient(135deg, rgba(255,173,2,0.12), rgba(239,142,38,0.08));
+            border-color: rgba(255,173,2,0.2);
+        }
+
+        /* ★ Títulos mais compactos */
+        .card-title {
+            text-align: center;
+            font-family: 'Sora', sans-serif;
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: -0.01em;
+            margin-bottom: 0.25rem;
+            color: var(--txt-dark);
+            line-height: 1.25;
+        }
+        .card-subtitle {
+            text-align: center;
+            font-size: 0.813rem;
+            color: var(--txt-muted);
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
 
         .field-label { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
-        .field-label label { font-size: 0.75rem; font-weight: 600; color: var(--txt-muted); text-transform: uppercase; letter-spacing: 0.06em; }
-        .required-badge { display: inline-flex; align-items: center; gap: 0.2rem; padding: 0.1rem 0.45rem; border-radius: 999px; font-size: 0.625rem; font-weight: 700; font-family: 'Sora', sans-serif; letter-spacing: 0.03em; background: rgba(239,142,38,0.1); color: #c2410c; border: 1px solid rgba(239,142,38,0.2); }
+        .field-label label { font-size: 0.7rem; font-weight: 600; color: var(--txt-muted); text-transform: uppercase; letter-spacing: 0.06em; }
+        .required-badge { display: inline-flex; align-items: center; gap: 0.2rem; padding: 0.1rem 0.45rem; border-radius: 999px; font-size: 0.6rem; font-weight: 700; font-family: 'Sora', sans-serif; letter-spacing: 0.03em; background: rgba(239,142,38,0.1); color: #c2410c; border: 1px solid rgba(239,142,38,0.2); }
 
+        /* ★ Inputs com altura mais refinada */
         .turma-input {
-            width: 100%; min-height: 52px; padding: 0 1rem 0 2.85rem;
-            border: 1.5px solid var(--border); border-radius: 0.75rem;
-            font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 600;
+            width: 100%; min-height: 46px; padding: 0 1rem 0 2.75rem;
+            border: 1.5px solid var(--border); border-radius: 0.625rem;
+            font-family: 'Sora', sans-serif; font-size: 0.938rem; font-weight: 600;
             color: var(--txt-dark); background: var(--claro); letter-spacing: 0.04em;
             transition: all 0.25s cubic-bezier(0.22,1,0.36,1);
         }
         .turma-input:hover { border-color: #94a3b8; }
         .turma-input:focus { outline: none; background: white; border-color: var(--verde); box-shadow: 0 0 0 4px rgba(139,189,71,0.12), var(--shadow-sm); }
-        .turma-input::placeholder { color: #94a3b8; font-weight: 400; font-size: 0.875rem; letter-spacing: 0; }
+        .turma-input::placeholder { color: #94a3b8; font-weight: 400; font-size: 0.813rem; letter-spacing: 0; }
         .turma-input.input-alert { border-color: rgba(239,142,38,0.4); background: #fffbeb; }
         .turma-input.input-alert:focus { border-color: var(--laranja); box-shadow: 0 0 0 4px rgba(239,142,38,0.15); }
 
         .validation-msg { overflow: hidden; max-height: 0; opacity: 0; transition: max-height 0.4s cubic-bezier(0.22,1,0.36,1), opacity 0.3s ease, margin 0.3s ease; margin-top: 0; pointer-events: none; }
         .validation-msg.visible { max-height: 100px; opacity: 1; margin-top: 0.75rem; pointer-events: auto; }
-        .validation-inner { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.75rem 1rem; border-radius: 0.75rem; font-size: 0.813rem; line-height: 1.5; background: #fffbeb; border: 1px solid #fde68a; }
-        .vi-icon { width: 24px; height: 24px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: rgba(239,142,38,0.1); }
-        .vi-title { font-family: 'Sora', sans-serif; font-weight: 600; font-size: 0.813rem; color: #92400e; }
-        .vi-text { font-size: 0.75rem; color: var(--txt-muted); margin-top: 0.125rem; }
+        .validation-inner { display: flex; align-items: flex-start; gap: 0.5rem; padding: 0.625rem 0.875rem; border-radius: 0.625rem; font-size: 0.75rem; line-height: 1.5; background: #fffbeb; border: 1px solid #fde68a; }
+        .vi-icon { width: 22px; height: 22px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: rgba(239,142,38,0.1); }
+        .vi-title { font-family: 'Sora', sans-serif; font-weight: 600; font-size: 0.75rem; color: #92400e; }
+        .vi-text { font-size: 0.688rem; color: var(--txt-muted); margin-top: 0.1rem; }
 
+        /* ★ Botão de submit mais refinado */
         .btn-submit {
-            width: 100%; min-height: 52px; padding: 0 1.5rem; border-radius: 0.75rem; border: none;
-            font-weight: 700; font-family: 'Sora', sans-serif; font-size: 0.938rem;
+            width: 100%; min-height: 46px; padding: 0 1.25rem; border-radius: 0.625rem; border: none;
+            font-weight: 700; font-family: 'Sora', sans-serif; font-size: 0.875rem;
             cursor: pointer; transition: all 0.25s cubic-bezier(0.22,1,0.36,1);
             display: flex; align-items: center; justify-content: center; gap: 0.5rem;
-            margin-top: 0.5rem; background: linear-gradient(135deg, var(--verde), var(--verde-dark)); color: white;
+            margin-top: 0.75rem; background: linear-gradient(135deg, var(--verde), var(--verde-dark)); color: white;
             box-shadow: 0 2px 8px rgba(139,189,71,0.3);
-            position: relative; overflow: hidden;
+            position: relative; overflow: hidden; text-decoration: none;
         }
         .btn-submit::after {
             content: ''; position: absolute; inset: 0;
@@ -256,7 +299,78 @@
         .btn-submit:hover::after { opacity: 1; }
         .btn-submit:active { transform: translateY(0) scale(0.98); }
 
-        .help-text { text-align: center; font-size: 0.813rem; color: var(--txt-muted); margin-top: 1.5rem; line-height: 1.6; }
+        /* ★ Botão dourado do card de relatórios */
+        .btn-submit.btn-relatorio {
+            background: linear-gradient(135deg, var(--dourado), #e6a800);
+            box-shadow: 0 2px 8px rgba(255,173,2,0.35);
+        }
+        .btn-submit.btn-relatorio:hover {
+            box-shadow: 0 6px 20px rgba(255,173,2,0.45);
+        }
+
+        /* ★ Lista de atalhos dentro do card de relatórios — itens mais compactos */
+        .relatorio-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+        }
+        .relatorio-link-item {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.5rem;
+            border: 1.5px solid var(--border-light);
+            background: var(--claro);
+            text-decoration: none;
+            color: var(--txt-body);
+            font-size: 0.813rem;
+            font-weight: 500;
+            transition: all 0.2s cubic-bezier(0.22,1,0.36,1);
+        }
+        .relatorio-link-item:hover {
+            border-color: rgba(255,173,2,0.35);
+            background: rgba(255,173,2,0.04);
+            color: var(--txt-dark);
+            transform: translateX(3px);
+            box-shadow: var(--shadow-sm);
+        }
+        .relatorio-link-item .rl-icon {
+            width: 30px; height: 30px; border-radius: 0.5rem;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; font-size: 0.7rem;
+            background: rgba(255,173,2,0.1); color: #b45309;
+            transition: all 0.2s;
+        }
+        .relatorio-link-item:hover .rl-icon {
+            background: rgba(255,173,2,0.18); color: #92400e;
+        }
+        .relatorio-link-item .rl-text { flex: 1; min-width: 0; }
+        .relatorio-link-item .rl-title {
+            font-family: 'Sora', sans-serif; font-weight: 600;
+            font-size: 0.75rem; color: var(--txt-dark); line-height: 1.2;
+        }
+        .relatorio-link-item .rl-desc {
+            font-size: 0.65rem; color: var(--txt-muted); margin-top: 0.05rem;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .relatorio-link-item .rl-arrow {
+            color: var(--border); font-size: 0.55rem;
+            transition: all 0.2s;
+        }
+        .relatorio-link-item:hover .rl-arrow {
+            color: var(--dourado); transform: translateX(2px);
+        }
+
+        /* ★ Help text mais discreto */
+        .help-text {
+            text-align: center;
+            font-size: 0.725rem;
+            color: var(--txt-muted);
+            margin-top: 1rem;
+            line-height: 1.5;
+        }
         .help-text i { color: rgba(139,189,71,0.6); margin-right: 0.25rem; }
 
         .app-footer {
@@ -273,7 +387,15 @@
 
         @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; } }
 
-        @media (max-width: 768px) { .cards-grid { grid-template-columns: 1fr; max-width: 420px; } }
+        /* ★ Breakpoints refinados */
+        @media (max-width: 1024px) {
+            .cards-grid.grid-trio { grid-template-columns: repeat(2, 1fr); max-width: 720px; }
+        }
+        @media (max-width: 768px) {
+            .cards-grid { grid-template-columns: 1fr; max-width: 420px; }
+            .cards-grid.grid-trio { grid-template-columns: 1fr; max-width: 420px; }
+            .form-panel { padding: 1.5rem 1rem; }
+        }
         @media (max-width: 640px) {
             .app-topbar { padding: 0.5rem 0.75rem; }
             .topbar-title { font-size: 0.875rem; }
@@ -282,8 +404,8 @@
             .btn-ghost .btn-text { display: none; }
             .btn-informe .btn-text { display: none; }
             .topbar-divider { display: none; }
-            .form-panel { padding: 1rem 0.75rem; }
-            .form-card { padding: 2rem 1.5rem 1.5rem; }
+            .form-card { padding: 1.5rem 1.25rem 1.25rem; }
+            .card-title { font-size: 1.125rem; }
             .app-footer { padding: 0.75rem 1rem; }
         }
     </style>
@@ -299,7 +421,6 @@
             </div>
         </div>
         <div class="topbar-right">
-            {{-- BOTÃO INFORME PRÉ-CADASTRO --}}
             <a href="{{ route('aluno.informePrecadastro') }}" class="btn-informe" aria-label="Informe sobre pre-cadastro">
                 <i class="fa-solid fa-file-lines text-xs" aria-hidden="true"></i>
                 <span class="btn-text">QR Code de Pre-cadastro</span>
@@ -319,62 +440,85 @@
     </header>
 
     <main class="form-panel">
-        
+
         @php
             $perfilUsuario = session('login')['perfil'] ?? '';
             $podeEmitirSenha = in_array(mb_strtoupper(trim($perfilUsuario)), ['ADMINISTRADOR DO SISTEMA', 'GERENCIA']);
         @endphp
 
-        <div class="cards-grid {{ !$podeEmitirSenha ? 'grid-single' : '' }}">
-            
+        <div class="cards-grid {{ $podeEmitirSenha ? 'grid-trio' : '' }}">
+
+            {{-- ★ CARD DE RELATÓRIOS — agora com 3 opções balanceadas --}}
+            <div class="form-card card-relatorio">
+                <div class="form-icon" role="img" aria-label="Icone de relatorios">
+                    <i class="fa-solid fa-chart-column text-xl" style="color:#b45309;"></i>
+                </div>
+                <h2 class="card-title">Relatorios</h2>
+                <p class="card-subtitle">Dados gerenciais e analiticos</p>
+
+                <div class="relatorio-links">
+                    <a href="{{ route('relatorio.matriculas') }}" class="relatorio-link-item" aria-label="Relatorio de matriculas">
+                        <div class="rl-icon"><i class="fa-solid fa-users"></i></div>
+                        <div class="rl-text">
+                            <div class="rl-title">Matriculas</div>
+                            <div class="rl-desc">Turmas, vagas e ocupacao</div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right rl-arrow" aria-hidden="true"></i>
+                    </a>
+                    
+                </div>
+
+                <p class="help-text"><i class="fa-solid fa-circle-info" style="color:rgba(255,173,2,0.5);"></i> Filtros por periodo, coordenacao e mais.</p>
+            </div>
+
             @if($podeEmitirSenha)
             <div class="form-card">
                 <div class="form-icon" role="img" aria-label="Icone de geracao de senha">
-                    <i class="fa-solid fa-fingerprint text-2xl" style="color:var(--verde);"></i>
+                    <i class="fa-solid fa-fingerprint text-xl" style="color:var(--verde);"></i>
                 </div>
-                <h2 class="text-center font-display font-800 text-xl sm:text-2xl tracking-tight mb-1" style="color:var(--txt-dark);line-height:1.2;">Emitir senha</h2>
-                <p class="text-center text-sm mb-8" style="color:var(--txt-muted);">Informe o codigo da turma para prosseguir</p>
+                <h2 class="card-title">Emitir senha</h2>
+                <p class="card-subtitle">Informe o codigo da turma para prosseguir</p>
 
                 <form id="formTurma" method="POST" action="{{ route('senha.imprimir') }}" novalidate autocomplete="off">
                     @csrf
                     <div class="field-label">
                         <label for="inputCodTurma">Codigo da turma</label>
-                        <span class="required-badge" aria-hidden="true"><i class="fa-solid fa-asterisk" style="font-size:6px;" aria-hidden="true"></i> Obrigatorio</span>
+                        <span class="required-badge" aria-hidden="true"><i class="fa-solid fa-asterisk" style="font-size:5px;" aria-hidden="true"></i> Obrigatorio</span>
                     </div>
                     <div style="position:relative;">
-                        <i class="fa-solid fa-barcode" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--txt-muted);font-size:0.875rem;pointer-events:none;" aria-hidden="true"></i>
+                        <i class="fa-solid fa-barcode" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--txt-muted);font-size:0.813rem;pointer-events:none;" aria-hidden="true"></i>
                         <input type="text" id="inputCodTurma" name="cod_turma" class="turma-input" placeholder="Ex: TURM3" maxlength="5" value="{{ old('cod_turma') }}" aria-required="true" aria-invalid="false" aria-describedby="helpTextSenha validationMsg">
                     </div>
                     <div id="validationMsg" class="validation-msg" role="alert" aria-live="assertive"></div>
-                    <button type="submit" class="btn-submit mt-3" aria-label="Gerar senha">
-                        <i class="fa-solid fa-print text-sm" aria-hidden="true"></i>
+                    <button type="submit" class="btn-submit" aria-label="Gerar senha">
+                        <i class="fa-solid fa-print text-xs" aria-hidden="true"></i>
                         <span>Gerar senha</span>
                     </button>
                 </form>
-                <p id="helpTextSenha" class="help-text"><i class="fa-solid fa-circle-info"></i> O codigo da turma esta disponivel na sua carta de convocacao.</p>
+                <p id="helpTextSenha" class="help-text"><i class="fa-solid fa-circle-info"></i> O codigo esta disponivel na carta de convocacao.</p>
             </div>
             @endif
 
             <div class="form-card">
                 <div class="form-icon" role="img" aria-label="Icone de busca de aluno">
-                    <i class="fa-solid fa-user-graduate text-2xl" style="color:var(--verde);"></i>
+                    <i class="fa-solid fa-user-graduate text-xl" style="color:var(--verde);"></i>
                 </div>
-                <h2 class="text-center font-display font-800 text-xl sm:text-2xl tracking-tight mb-1" style="color:var(--txt-dark);line-height:1.2;">Buscar Aluno</h2>
-                <p class="text-center text-sm mb-8" style="color:var(--txt-muted);">Localize um aluno para emitir a carteirinha</p>
+                <h2 class="card-title">Buscar Aluno</h2>
+                <p class="card-subtitle">Localize um aluno para emitir a carteirinha</p>
 
                 <form id="formAluno" method="GET" action="{{ route('aluno.index') }}" novalidate>
                     <div class="field-label">
                         <label for="inputBuscaAluno">Nome, CPF ou RG</label>
-                        <span class="required-badge" aria-hidden="true"><i class="fa-solid fa-asterisk" style="font-size:6px;" aria-hidden="true"></i> Obrigatorio</span>
+                        <span class="required-badge" aria-hidden="true"><i class="fa-solid fa-asterisk" style="font-size:5px;" aria-hidden="true"></i> Obrigatorio</span>
                     </div>
                     <div style="position:relative;">
-                        <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--txt-muted);font-size:0.875rem;pointer-events:none;" aria-hidden="true"></i>
-                        <input 
-                            type="text" 
-                            id="inputBuscaAluno" 
-                            name="busca" 
-                            class="turma-input" 
-                            placeholder="Ex: Joao da Silva" 
+                        <i class="fa-solid fa-magnifying-glass" style="position:absolute;left:1rem;top:50%;transform:translateY(-50%);color:var(--txt-muted);font-size:0.813rem;pointer-events:none;" aria-hidden="true"></i>
+                        <input
+                            type="text"
+                            id="inputBuscaAluno"
+                            name="busca"
+                            class="turma-input"
+                            placeholder="Ex: Joao da Silva"
                             value="{{ request('busca') }}"
                             aria-required="true"
                             aria-invalid="false"
@@ -382,13 +526,15 @@
                         >
                     </div>
                     <div id="validationMsgAluno" class="validation-msg" role="alert" aria-live="assertive"></div>
-                    <button type="submit" class="btn-submit mt-3" aria-label="Buscar aluno">
-                        <i class="fa-solid fa-magnifying-glass text-sm" aria-hidden="true"></i>
+                    <button type="submit" class="btn-submit" aria-label="Buscar aluno">
+                        <i class="fa-solid fa-magnifying-glass text-xs" aria-hidden="true"></i>
                         <span>Buscar Aluno</span>
                     </button>
                 </form>
-                <p id="helpTextAluno" class="help-text"><i class="fa-solid fa-circle-info"></i> Informe dados do aluno para acessar seu historico e carteirinha.</p>
+                <p id="helpTextAluno" class="help-text"><i class="fa-solid fa-circle-info"></i> Informe dados para acessar o historico e carteirinha.</p>
             </div>
+
+            
 
         </div>
     </main>
@@ -466,7 +612,7 @@
     }
 
     document.addEventListener('DOMContentLoaded', () => {
-        
+
         const formTurma = document.getElementById('formTurma');
         if (formTurma) {
             const inputTurma = document.getElementById('inputCodTurma');
