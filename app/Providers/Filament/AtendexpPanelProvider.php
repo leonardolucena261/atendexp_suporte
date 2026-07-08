@@ -33,7 +33,7 @@ class AtendexpPanelProvider extends PanelProvider
             ->profile()                      // Perfil do usuário logado
             ->colors([
                 'primary' => '#8BBD47',      // ✅ Verde Atende XP
-                'gray' => '#334155',       // ✅ Mesmo tom de texto do sistema
+                'gray' => '#334155',         // ✅ Mesmo tom de texto do sistema
             ])
             ->font('Space Grotesk')          // ✅ Fonte body do sistema
             ->brandName('Atende XP')         // ✅ Nome exibido no sidebar e login
