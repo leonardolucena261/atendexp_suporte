@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Coordenador\Resources\Cursos\CursoResource;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -27,7 +28,7 @@ class AtendexpPanelProvider extends PanelProvider
             ->id('atendexp')
             ->path('atendexp')
             ->login()                        // Habilita tela de login do Filament
-            ->registration()                 // (Opcional) Remove se não quiser cadastro de admin
+            //->registration()                 // (Opcional) Remove se não quiser cadastro de admin
             ->passwordReset()                // Recuperação de senha
             ->emailVerification()            // Verificação de email (opcional)
             ->profile()                      // Perfil do usuário logado
@@ -40,6 +41,9 @@ class AtendexpPanelProvider extends PanelProvider
             ->brandLogo(asset('images/logo-atendexp.svg'))   // ⬅️ Passo 4 cria esse arquivo
             ->brandLogoHeight('2rem')
             ->favicon(asset('images/favicon-atendexp.svg'))  // ⬅️ Passo 4 cria esse arquivo
+            ->resources([
+            CursoResource::class,
+            ])
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\Filament\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\Filament\Pages')
             ->pages([

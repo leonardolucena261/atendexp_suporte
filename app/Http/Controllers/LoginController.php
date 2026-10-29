@@ -23,7 +23,7 @@ class LoginController extends Controller
             'nome_usuario' => 'required|string',
             'senha'        => 'required|string',
         ]);
-        
+
         $usuario = Usuario::where('nome_usuario', $credentials['nome_usuario'])
                         ->where('senha', $credentials['senha'])
                         ->where('situacao', 'ATIVO')
@@ -31,7 +31,9 @@ class LoginController extends Controller
 
         if ($usuario) {
             session(['login' => $usuario]);
-            return redirect()->intended('/senha');
+            // Limpa a "intenção" que redirects de convidado (ex.: /coordenador) deixaram na sessão
+            session()->forget('url.intended');
+            return redirect('/senha');
         }
 
         return back()->withErrors([
