@@ -10,6 +10,7 @@ use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Filament\Pages\Dashboard;
 use Filament\Panel;
 use Filament\PanelProvider;
+use Filament\View\PanelsRenderHook;
 use Filament\Widgets\AccountWidget;
 use Filament\Widgets\FilamentInfoWidget;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -28,12 +29,19 @@ class AtendexpPanelProvider extends PanelProvider
             ->id('atendexp')
             ->path('atendexp')
             ->login()                        // Habilita tela de login do Filament
-            //->registration()                 // (Opcional) Remove se não quiser cadastro de admin
+            //->registration()               // (Opcional) Remove se não quiser cadastro de admin
             ->passwordReset()                // Recuperação de senha
             ->emailVerification()            // Verificação de email (opcional)
             ->profile()                      // Perfil do usuário logado
             ->colors([
-                'primary' => '#8BBD47',      // ✅ Verde Atende XP
+                'primary' => [   // escala completa do verde da marca (hover/dark perfeitos)
+                '50' => '#f7fbef', '100' => '#edf7da', '200' => '#dbefb7',
+                '300' => '#c3e58b', '400' => '#a3cf5f', '500' => '#8BBD47',
+                '600' => '#6f9d36', '700' => '#587b2c', '800' => '#486227',
+                '900' => '#3d5324', '950' => '#1c2c0e',
+                ],      // ✅ Verde Atende XP
+                'warning' => '#FFAD02',  // dourado
+                'info'    => '#EF8E26',  // laranja
                 'gray' => '#334155',         // ✅ Mesmo tom de texto do sistema
             ])
             ->font('Space Grotesk')          // ✅ Fonte body do sistema
@@ -55,70 +63,12 @@ class AtendexpPanelProvider extends PanelProvider
                 FilamentInfoWidget::class,
             ])
             ->renderHook(
-                'panels::head.start',
-                fn () => <<<'HTML'
-                <link rel="preconnect" href="https://fonts.googleapis.com">
-                <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Sora:wght@200;400;600;800&display=swap" rel="stylesheet">
-                <style>
-                    /* Títulos do Filament com Sora */
-                    h1, h2, h3, h4, h5, h6,
-                    .fi-heading-text,
-                    .filament-brand-name {
-                        font-family: 'Sora', sans-serif !important;
-                    }
-
-                    /* Corpo com Space Grotesk */
-                    body, p, span, label, td, th, li {
-                        font-family: 'Space Grotesk', sans-serif !important;
-                    }
-
-                    /* Gradiente no topo do sidebar */
-                    .fi-sidebar-container::before {
-                        content: '';
-                        position: absolute;
-                        top: 0; left: 0; right: 0;
-                        height: 4px;
-                        background: linear-gradient(90deg, #8BBD47, #a8d465, #FFAD02);
-                        z-index: 10;
-                    }
-
-                    /* Botão primário com gradiente verde */
-                    .fi-btn-primary {
-                        background: linear-gradient(135deg, #8BBD47, #6a9a2f) !important;
-                        border-color: #6a9a2f !important;
-                        box-shadow: 0 4px 14px rgba(139,189,71,0.35);
-                        font-family: 'Sora', sans-serif;
-                        font-weight: 600;
-                        border-radius: 0.75rem !important;
-                        transition: all 0.3s cubic-bezier(0.22,1,0.36,1);
-                    }
-                    .fi-btn-primary:hover {
-                        box-shadow: 0 8px 24px rgba(139,189,71,0.45);
-                        transform: translateY(-2px);
-                    }
-
-                    /* Cards com estilo glassmorphism suave */
-                    .filament-card {
-                        border-radius: 1rem !important;
-                        border: 1px solid #E2E8F0 !important;
-                        box-shadow: 0 4px 12px rgba(0,0,0,0.04) !important;
-                    }
-
-                    /* Background do painel */
-                    .fi-main-content {
-                        background-color: #F9F9F9 !important;
-                    }
-
-                    /* Sidebar styling */
-                    .fi-sidebar {
-                        background-color: #1E293B !important;
-                    }
-                    .fi-sidebar-item-active {
-                        background-color: rgba(139,189,71,0.15) !important;
-                        color: #8BBD47 !important;
-                    }
-                </style>
-            HTML,
+                PanelsRenderHook::HEAD_END,
+                fn (): string => '
+                    <link rel="preconnect" href="https://fonts.googleapis.com">
+                    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@200;400;600;800&display=swap" rel="stylesheet">
+                    <link rel="stylesheet" href="'.asset('css/atendexp.css').'">
+                '
             )
             ->middleware([
                     EncryptCookies::class,

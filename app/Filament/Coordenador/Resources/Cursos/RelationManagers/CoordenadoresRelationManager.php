@@ -5,7 +5,7 @@ namespace App\Filament\Coordenador\Resources\Cursos\RelationManagers;
 use App\Models\CursoCoordenador;
 use App\Models\User;
 use App\Services\CoordenadorService;
-use Carbon\Carbon;
+use Illuminate\Support\Carbon;
 use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
 use Filament\Forms\Components\DatePicker;

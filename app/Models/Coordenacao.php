@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Coordenacao extends Model
@@ -14,5 +15,5 @@ class Coordenacao extends Model
     public function cursos(): HasMany
     {
         return $this->hasMany(Curso::class, 'cod_coordenacao', 'cod_coordenacao');
-    }
+    }   
 }

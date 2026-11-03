@@ -1,0 +1,269 @@
+/* ============================================================
+   ATENDE XP · Tema "Aurora" — painel /atendexp (Filament)
+   Tema duplo: claro + dark · glassmorphism · aurora animada
+   ============================================================ */
+
+/* ---------- 1. Design tokens ---------- */
+:root {
+    /* modo CLARO (padrão) */
+    --atx-bg: #f4f7f1;
+    --atx-surface: rgba(255,255,255,.78);
+    --atx-border: rgba(15,23,42,.08);
+    --atx-text: #0f172a;
+    --atx-muted: #5b6b7c;
+    --atx-glow: rgba(139,189,71,.28);
+    --atx-blob-1: rgba(139,189,71,.35);
+    --atx-blob-2: rgba(255,173,2,.22);
+    --atx-shadow: 0 10px 34px rgba(15,23,42,.07);
+    --atx-selection-bg: rgba(139,189,71,.35);
+    --atx-selection-fg: #0f172a;
+    --atx-topbar: rgba(255, 255, 255, .75);
+    --atx-topbar-fg: #3f4b5a;
+    --atx-topbar-hover-fg: #587b2c;
+    --atx-chrome-border: rgba(15, 23, 42, .06);
+    --atx-sidebar: rgba(244, 249, 237, .88);
+    --atx-sidebar-item: #3f4b5a;
+    --atx-sidebar-item-strong: #0f172a;
+    --atx-sidebar-icon: #64748b;
+    --atx-sidebar-icon-hover: #587b2c;
+    --atx-sidebar-soft: rgba(139, 189, 71, .10);
+    --atx-sidebar-group: #94a3b8;
+    color-scheme: light;
+}
+
+/* modo DARK — seletor-coringa (html.dark, body.dark-mode, data-theme...) */
+:is(
+    html.dark-mode, html.dark,
+    body.dark-mode, body.dark,
+    [data-theme="dark"]
+) {
+    --atx-bg: #070d18;
+    --atx-surface: rgba(17,26,44,.62);
+    --atx-border: rgba(148,163,184,.14);
+    --atx-text: #e2e8f0;
+    --atx-muted: #8fa0b3;
+    --atx-glow: rgba(139,189,71,.38);
+    --atx-blob-1: rgba(139,189,71,.22);
+    --atx-blob-2: rgba(255,173,2,.14);
+    --atx-shadow: 0 18px 44px rgba(0,0,0,.45);
+    --atx-selection-bg: rgba(139,189,71,.5);
+    --atx-selection-fg: #f4fbea;
+    --atx-topbar: rgba(7, 13, 24, .66);
+    --atx-topbar-fg: rgba(226, 232, 240, .85);
+    --atx-topbar-hover-fg: #a8d465;
+    --atx-chrome-border: rgba(148, 163, 184, .12);
+    --atx-sidebar: #060b14;
+    --atx-sidebar-item: rgba(226, 232, 240, .85);
+    --atx-sidebar-item-strong: #ffffff;
+    --atx-sidebar-icon: rgba(226, 232, 240, .7);
+    --atx-sidebar-icon-hover: #a8d465;
+    --atx-sidebar-soft: rgba(139, 189, 71, .08);
+    --atx-sidebar-group: rgba(226, 232, 240, .35);
+    color-scheme: dark;
+}
+
+/* ---------- 2. Fundo aurora animada ---------- */
+body.fi-body {
+    background-color: var(--atx-bg);
+    color: var(--atx-text);
+    transition: background-color .35s ease, color .35s ease;
+}
+body.fi-body::before, body.fi-body::after {
+    content: '';
+    position: fixed; z-index: -1; border-radius: 50%;
+    pointer-events: none; filter: blur(90px);
+    animation: atx-drift 26s ease-in-out infinite alternate;
+}
+body.fi-body::before {
+    top: -12%; right: -6%; width: 34rem; height: 34rem;
+    background: radial-gradient(circle at 35% 35%, var(--atx-blob-1), transparent 65%);
+}
+body.fi-body::after {
+    bottom: -16%; left: -8%; width: 28rem; height: 28rem;
+    background: radial-gradient(circle at 60% 60%, var(--atx-blob-2), transparent 65%);
+    animation-delay: -13s;
+}
+@keyframes atx-drift {
+    from { transform: translate3d(0,0,0) scale(1); }
+    to   { transform: translate3d(46px, 34px, 0) scale(1.1); }
+}
+
+/* ---------- 3. Superfícies de vidro ---------- */
+.fi-section, .fi-ta, .fi-simple-card {
+    background: var(--atx-surface) !important;
+    backdrop-filter: blur(14px) saturate(160%);
+    -webkit-backdrop-filter: blur(14px) saturate(160%);
+    border: 1px solid var(--atx-border) !important;
+    border-radius: 1.25rem !important;
+    box-shadow: var(--atx-shadow) !important;
+    transition: background-color .35s ease, border-color .35s ease;
+}
+
+/* ---------- 4. Topbar (vidro do tema) ---------- */
+.fi-topbar {
+    position: relative;
+    background: var(--atx-topbar) !important;
+    backdrop-filter: blur(18px) saturate(180%);
+    -webkit-backdrop-filter: blur(18px) saturate(180%);
+    border-bottom: 1px solid var(--atx-chrome-border) !important;
+    box-shadow: 0 8px 30px rgba(2, 6, 23, .06);
+    color: var(--atx-topbar-fg);
+}
+.fi-topbar::after {
+    content: '';
+    position: absolute; left: 0; right: 0; bottom: -1px; height: 1px;
+    background: linear-gradient(90deg,
+        transparent, rgba(139,189,71,.55), rgba(255,173,2,.4), transparent);
+    pointer-events: none;
+}
+.fi-topbar .fi-icon-btn {
+    border-radius: .75rem;
+    color: var(--atx-topbar-fg) !important;
+    transition: background-color .2s ease, color .2s ease, transform .2s ease;
+}
+.fi-topbar .fi-icon-btn:hover {
+    background-color: rgba(139, 189, 71, .14) !important;
+    color: var(--atx-topbar-hover-fg) !important;
+    transform: translateY(-1px);
+}
+.fi-topbar input {
+    background-color: rgba(139, 189, 71, .07) !important;
+    color: var(--atx-topbar-fg) !important;
+}
+.fi-topbar input::placeholder { color: var(--atx-muted) !important; }
+
+/* ---------- 5. Sidebar (vidro do tema) ---------- */
+.fi-sidebar {
+    background-color: var(--atx-sidebar) !important;
+    background-image: linear-gradient(180deg, rgba(139,189,71,.05) 0%, transparent 32%);
+    border-right: 1px solid var(--atx-chrome-border) !important;
+}
+.fi-sidebar-header { background: transparent !important; }
+
+.fi-sidebar .fi-sidebar-item {
+    position: relative;
+    border-radius: .875rem;
+    transition: background-color .22s ease, box-shadow .22s ease, transform .22s ease;
+}
+.fi-sidebar .fi-sidebar-item-label {
+    color: var(--atx-sidebar-item) !important;
+    font-weight: 500;
+}
+.fi-sidebar .fi-sidebar-item svg {
+    color: var(--atx-sidebar-icon) !important;
+    transition: color .22s ease;
+}
+.fi-sidebar .fi-sidebar-item:hover {
+    background-color: var(--atx-sidebar-soft) !important;
+    transform: translateX(3px);
+}
+.fi-sidebar .fi-sidebar-item:hover .fi-sidebar-item-label { color: var(--atx-sidebar-item-strong) !important; }
+.fi-sidebar .fi-sidebar-item:hover svg { color: var(--atx-sidebar-icon-hover) !important; }
+
+/* item ativo: A PÍLULA-VERDE da marca (surpresa!) */
+.fi-sidebar .fi-sidebar-item-active {
+    background-color: #8BBD47 !important;
+    background-image: linear-gradient(135deg, #a8d465 0%, #8BBD47 55%, #6a9a2f 100%) !important;
+    box-shadow: 0 6px 20px rgba(139, 189, 71, .4);
+    animation: atx-pulse 3.5s ease-in-out infinite;
+}
+.fi-sidebar .fi-sidebar-item-active::before {
+    content: '';
+    position: absolute; left: 0; top: 22%; bottom: 22%;
+    width: 3px; border-radius: 999px;
+    background: linear-gradient(180deg, #142408, #2f4a10);
+    box-shadow: 0 0 10px rgba(20, 36, 8, .6);
+}
+.fi-sidebar .fi-sidebar-item-active .fi-sidebar-item-label {
+    color: #0f1a08 !important;
+    font-weight: 700;
+}
+.fi-sidebar .fi-sidebar-item-active svg { color: #12240b !important; }
+
+.fi-sidebar .fi-sidebar-group-label {
+    font-family: 'Sora', sans-serif;
+    font-size: .65rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--atx-sidebar-group) !important;
+}
+
+@keyframes atx-pulse {
+    0%, 100% { box-shadow: 0 6px 20px rgba(139, 189, 71, .35); }
+    50%      { box-shadow: 0 8px 30px rgba(139, 189, 71, .55); }
+}
+
+/* ---------- 6. Botão primário: gradiente + lift ---------- */
+.fi-btn-color-primary {
+    background-image: linear-gradient(135deg, #a8d465 0%, #8BBD47 45%, #6a9a2f 100%) !important;
+    border: none !important;
+    box-shadow: 0 4px 16px var(--atx-glow);
+    transition: transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s ease, filter .22s ease;
+}
+.fi-btn-color-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 28px var(--atx-glow);
+    filter: saturate(1.1);
+}
+.fi-btn-color-primary:active { transform: translateY(0) scale(.98); }
+
+/* ---------- 7. Tipografia ---------- */
+h1, h2, h3, h4, .fi-heading, .fi-wi-heading, .fi-section-header-heading {
+    font-family: 'Sora', sans-serif;
+    letter-spacing: -0.02em;
+}
+.fi-brand-name {
+    font-family: 'Sora', sans-serif;
+    font-weight: 800;
+    background: linear-gradient(90deg, #8BBD47, #d9efb7 55%, #FFAD02);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+.fi-ta-header-cell {
+    font-family: 'Sora', sans-serif;
+    font-size: .68rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--atx-muted) !important;
+}
+
+/* ---------- 8. Tela de login: o hero-card ---------- */
+.fi-simple-layout { background: transparent; }
+.fi-simple-card { position: relative; overflow: hidden; border-radius: 2rem !important; }
+.fi-simple-card::before {
+    content: '';
+    position: absolute; top: 0; left: 0; right: 0; height: 4px;
+    background: linear-gradient(90deg, #8BBD47, #a8d465, #FFAD02);
+}
+.fi-simple-card::after {
+    content: '';
+    position: absolute; top: -60px; right: -60px;
+    width: 180px; height: 180px; border-radius: 50%;
+    background: radial-gradient(circle, var(--atx-glow), transparent 70%);
+    filter: blur(30px); pointer-events: none;
+}
+
+/* ---------- 9. Foco & scrollbar ---------- */
+body.fi-body :focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 3px var(--atx-bg), 0 0 0 5px #8BBD47 !important;
+    border-radius: 4px;
+}
+body.fi-body ::-webkit-scrollbar { width: 10px; height: 10px; }
+body.fi-body ::-webkit-scrollbar-thumb { background: rgba(139,189,71,.35); border-radius: 8px; }
+body.fi-body ::-webkit-scrollbar-thumb:hover { background: rgba(139,189,71,.6); }
+
+/* ---------- 10. Acessibilidade ---------- */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+    }
+}
+
+/* ---------- 11. Seleção de texto com a marca ---------- */
+body.fi-body ::selection {
+    background: var(--atx-selection-bg);
+    color: var(--atx-selection-fg);
+}

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
@@ -41,5 +42,9 @@ class Curso extends Model
         return $this->hasOne(CursoCoordenador::class, 'curso_id', 'cod_curso')
                     ->whereNull('data_fim')
                     ->latest('data_inicio');
+    }
+    public function coordenacao(): BelongsTo
+    {
+        return $this->belongsTo(Coordenacao::class, 'cod_coordenacao', 'cod_coordenacao');
     }
 }
