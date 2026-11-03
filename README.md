@@ -1,59 +1,178 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🎓 Atende XP — Suporte a Matrículas
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+**Plataforma interna da Cidade do Saber** (Prefeitura de Camaçari) para emissão
+de senhas de matrícula, gestão de carteirinhas, pré-cadastro de candidatos
+e coordenação de cursos.
 
-## About Laravel
+![PHP](https://img.shields.io/badge/PHP-8.3-777BB4?logo=php&logoColor=white)
+![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?logo=laravel&logoColor=white)
+![Filament](https://img.shields.io/badge/Filament-v5-F9AE38)
+![MySQL](https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white)
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 📖 Sobre o projeto
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+O Atende XP apoia o processo de matrícula presencial da Cidade do Saber:
+candidatos se pré-cadastram, recebem senhas oficiais com QR Code e, após a
+matrícula, contam com carteirinha digital. A gestão dos cursos é feita por
+**coordenadores com mandato definido** — cada curso pode ter vários
+coordenadores ao longo do tempo, um por vez, com período de vigência
+(`data_inicio` / `data_fim`) — cada um com seu **Workspace** exclusivo.
 
-## Learning Laravel
+## ✨ Funcionalidades
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Pré-cadastro de candidatos** e emissão de senhas de matrícula com QR Code
+- **Carteirinhas** de acesso ao aplicativo do cursista
+- **Módulo de coordenação de cursos** — mandatos com início/fim, escalação e
+  encerramento com regras transacionais (um único coordenador ativo por curso,
+  garantido por constraint no MySQL)
+- **Dois painéis Filament**:
+  - `/atendexp` — administração (cursos, coordenações, escalação de mandatos)
+  - `/coordenador` — *Workspace do Coordenador*, acessível apenas a
+    coordenadores com mandato ativo
+- **Convite por WhatsApp** — ao ser escalado, o coordenador recebe mensagem
+  com seu **UUID de acesso** e link do Workspace
+- **Tema "Aurora"** — identidade visual da marca (verde/dourado), modo claro
+  e escuro com design tokens
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 🧱 Stack
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+| Camada | Tecnologia |
+|---|---|
+| Backend | PHP 8.3 · Laravel 13 |
+| Painéis admin | Filament v5 (multi-panel) |
+| Banco | MySQL 8 (base legada + tabelas novas) |
+| Front | Blade · Tailwind · Vite · tema CSS próprio |
+| Mensageria | Evolution API (WhatsApp) via canal de notification próprio |
+| Fila | Laravel Queue (sync em dev, database em produção) |
 
-## Agentic Development
+## 🗺️ Arquitetura em um minuto
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
-
-```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+```mermaid
+flowchart LR
+    subgraph Entradas
+        L["/login (legado)"] --> S["/senha"]
+        P["/precadastro"]
+    end
+    subgraph Painéis Filament
+        A["Admin Atende XP — /atendexp"]
+        C["Workspace do Coordenador — /coordenador"]
+    end
+    subgraph Núcleo
+        SVC[CoordenadorService]
+        DB[(MySQL)]
+        W[WhatsAppService]
+    end
+    A -- "escalar / encerrar" --> SVC
+    SVC --> DB
+    SVC -- "ConviteCoordenador (UUID)" --> W
+    W -- "dry-run ou Evolution API" --> C
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+**Fluxo de escalação de coordenador:**
 
-## Contributing
+```mermaid
+sequenceDiagram
+    actor Admin as Admin (/atendexp)
+    participant S as CoordenadorService
+    participant DB as MySQL
+    participant W as WhatsAppService
+    participant C as Coordenador
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+    Admin->>S: escalar(curso, user, data_inicio)
+    S->>DB: transação + lockForUpdate
+    S->>DB: encerra mandato anterior (data_fim = véspera)
+    S->>DB: cria mandato novo (gera UUID do usuário se ausente)
+    S-->>Admin: mandato criado
+    S->>W: notify(ConviteCoordenador)
+    W-->>C: mensagem com UUID + link de acesso
+```
 
-## Code of Conduct
+A regra de negócio de coordenação mora **num único lugar** —
+`App\Services\CoordenadorService` — consumido pelas actions do Filament.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 🚀 Instalação
 
-## Security Vulnerabilities
+**Pré-requisitos:** PHP 8.3+ (extensões `pdo_mysql mbstring xml curl zip intl gd`),
+Composer, MySQL 8, Node 20+.
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```bash
+git clone https://github.com/leonardolucena261/atendexp_suporte.git
+cd atendexp_suporte
 
-## License
+composer install
+cp .env.example .env
+php artisan key:generate
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
-# atendexp_suporte
+# crie o banco e configure as credenciais no .env antes de migrar
+php artisan migrate
+
+npm install
+npm run build
+
+php artisan serve   # http://127.0.0.1:8000
+```
+
+## 🔑 Variáveis de ambiente
+
+| Variável | Descrição |
+|---|---|
+| `DB_*` | Conexão MySQL (base legada + novas tabelas) |
+| `WHATSAPP_ENABLED` | `false` = **modo seco** (só registra no log) · `true` = envia de verdade |
+| `WHATSAPP_BASE_URL` | URL da instância Evolution API |
+| `WHATSAPP_API_KEY` | Chave da API (nunca versionada) |
+| `WHATSAPP_INSTANCE` | Nome da instância WhatsApp |
+
+## 🚪 Acessos e papéis
+
+| URL | Quem | O que faz |
+|---|---|---|
+| `/login` → `/senha` | Todos (auth legada) | Login do sistema |
+| `/precadastro` | Candidatos | Pré-cadastro de matrícula |
+| `/atendexp` | Administradores (`is_admin`) | CRUD de cursos e escalação de coordenadores |
+| `/coordenador` | Coordenadores com mandato ativo | Workspace do Coordenador |
+| `/coordenador/acesso/{uuid}` | Coordenadores convidados | Acesso via UUID + senha *(em desenvolvimento)* |
+
+## 🗂️ Estrutura essencial
+
+```
+app/
+├── Channels/WhatsappChannel.php          # ponte notification → WhatsApp
+├── Filament/
+│   ├── Coordenador/Resources/Cursos/     # resource compartilhado entre painéis
+│   └── Providers/                        # AtendexpPanelProvider · CoordenadorPanelProvider
+├── Models/                               # Curso, CursoCoordenador, Coordenacao, Diretoria, User
+├── Notifications/ConviteCoordenador.php
+└── Services/
+    ├── CoordenadorService.php            # regra de negócio dos mandatos
+    └── WhatsAppService.php               # transporte WhatsApp (dry-run nativo)
+```
+
+## 🧪 Testes
+
+```bash
+php artisan test
+```
+
+## 🗺️ Roadmap
+
+- [ ] Rota de acesso ao Workspace por UUID + senha (`/coordenador/acesso/{uuid}`)
+- [ ] Backfill de UUIDs para usuários existentes
+- [ ] Suíte de testes do fluxo de escalação
+- [ ] Confirmação de pré-cadastro por WhatsApp
+- [ ] Lembretes agendados (dia da matrícula, digest do coordenador)
+- [ ] Convocação de lista de espera
+
+## 🔐 Segurança
+
+- `.env` e credenciais **nunca** são versionadas
+- Acesso a painéis negado por padrão (`FilamentUser::canAccessPanel` por painel)
+- WhatsApp apenas **transacional**, com opt-in do usuário (LGPD)
+- UUID do coordenador é *identificador* de acesso, não segredo — a senha é a do usuário
+
+## 👤 Autor
+
+**Leonardo Lucena** — [@leonardolucena261](https://github.com/leonardolucena261)
+
+Projeto de uso interno da **Cidade do Saber — Prefeitura de Camaçari**.
+Todos os direitos reservados.
