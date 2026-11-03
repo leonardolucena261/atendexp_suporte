@@ -9,6 +9,9 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use App\Notifications\ConviteCoordenador;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class CoordenadorService
 {
@@ -48,7 +51,19 @@ class CoordenadorService
                 'observacao'  => $obs,
             ]);
         });
+
+        $this->notificarEscalacao($curso, $user, $mandato);
+        return $mandato;
     }
+
+    private function notificarEscalacao(Curso $curso, User $user, CursoCoordenador $mandato): void
+{
+    try {
+        $user->notify(new ConviteCoordenador($curso, $mandato));
+    } catch (Throwable $e) {
+        Log::warning('[Coordenacao] falha ao despachar convite: '.$e->getMessage());
+    }
+}
 
     /** Encerra um mandato manualmente (ex.: coordenador saiu antes do previsto) */
     public function encerrar(CursoCoordenador $mandato, Carbon $fim): void
